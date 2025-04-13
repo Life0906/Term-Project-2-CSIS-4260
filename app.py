@@ -25,7 +25,7 @@ This app uses LSTM neural networks to predict Bitcoin prices based on historical
 # Sidebar
 st.sidebar.header("Model Parameters")
 lookback_period = st.sidebar.selectbox("Select Lookback Period (Days)", [1, 5, 7], index=1)
-prediction_days = st.sidebar.slider("Number of Days to Predict", 1, 30, 5)
+prediction_days = st.sidebar.slider("Number of Days to Predict", 1, 5, 5)
 
 # Functions
 @st.cache_data(ttl=3600)
