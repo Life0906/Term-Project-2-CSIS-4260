@@ -90,6 +90,9 @@ for i in range(lookback, len(df)):
 X_seq = np.array(X_seq)
 y_seq = np.array(y_seq).reshape(-1, 1)
 
+print("Live X columns:", list(X.columns))
+print("Scaler expects:", scaler_X.n_features_in_)  # Should be 18
+
 # Scale
 X_seq_scaled = scaler_X.transform(X_seq.reshape(-1, X.shape[1])).reshape(X_seq.shape)
 y_seq_scaled = scaler_y.transform(y_seq)
