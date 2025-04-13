@@ -92,36 +92,3 @@ y_seq = np.array(y_seq).reshape(-1, 1)
 
 print("Live X columns:", list(X.columns))
 print("Scaler expects:", scaler_X.n_features_in_)  # Should be 18
-
-# Scale
-X_seq_scaled = scaler_X.transform(X_seq.reshape(-1, X.shape[1])).reshape(X_seq.shape)
-y_seq_scaled = scaler_y.transform(y_seq)
-
-# Predict last 8% for r2 evaluation
-split_index = int(len(X_seq_scaled) * 0.92)
-X_test_scaled = X_seq_scaled[split_index:]
-y_test_scaled = y_seq_scaled[split_index:]
-y_pred_scaled = model.predict(X_test_scaled)
-y_pred = scaler_y.inverse_transform(y_pred_scaled)
-y_actual = scaler_y.inverse_transform(y_test_scaled)
-
-# Calculate R²
-from sklearn.metrics import r2_score
-r2 = r2_score(y_actual, y_pred)
-st.write(f"**Model R² Score:** `{r2:.4f}`")
-
-# --- Forecast next 5 days ---
-preds = forecast_next_5_days(model, scaler_X, scaler_y, df[X.columns], lookback)
-future_dates = [dates[-1] + pd.Timedelta(days=i + 1) for i in range(5)]
-
-st.subheader("🔮 Next 5-Day Forecast")
-forecast_df = pd.DataFrame({'Date': future_dates, 'Predicted Close Price (USD)': preds})
-st.dataframe(forecast_df.set_index('Date').style.format({"Predicted Close Price (USD)": "${:,.2f}"}))
-
-# --- Optional Chart ---
-st.subheader("📊 Actual vs Predicted (Test Data)")
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.plot(y_actual[-100:], label='Actual')
-ax.plot(y_pred[-100:], label='Predicted')
-ax.legend()
-st.pyplot(fig)
