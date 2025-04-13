@@ -51,7 +51,7 @@ def load_btc_data():
     df = df.drop(columns=[col for col in df.columns if col.endswith('_cross') or col.endswith('_cross_lagged')])
 
     # Removing the SMA columns to avoid co-relation with EMA. EMA is proven to be more effective way to predict prices
-    sma_columns_to_drop = ['SMA_10', 'SMA_20', 'SMA_40', 'SMA_50', 'SMA_200']
+    sma_columns_to_drop = ['SMA_10', 'SMA_20', 'SMA_50', 'SMA_200']
     df = df.drop(columns=sma_columns_to_drop)
 
     df = df.dropna()
