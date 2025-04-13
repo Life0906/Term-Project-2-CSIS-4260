@@ -58,6 +58,9 @@ def load_btc_data():
 def calculate_ema(data, period):
     return data['Close'].ewm(span=period, adjust=False).mean()
 
+def calculate_sma(data, period):
+    return data['Close'].rolling(window=period).mean()
+
 def calculate_rsi(data, period=14):
     delta = data['Close'].diff(1)
     gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
