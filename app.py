@@ -12,6 +12,8 @@ def load_btc_data():
     btc = yf.Ticker("BTC-USD")
     df = btc.history(period="10y", interval="1d")
     df = df.drop(columns=['Dividends', 'Stock Splits'])
+
+    # --- Technical Indicators ---
     df['Daily_Return'] = df['Close'].pct_change()
     df['Volatility_7d'] = df['Daily_Return'].rolling(window=7).std()
     df['RSI'] = calculate_rsi(df)
@@ -19,13 +21,38 @@ def load_btc_data():
     df['EMA_21'] = calculate_ema(df, 21)
     df['EMA_55'] = calculate_ema(df, 55)
     df['EMA_200'] = calculate_ema(df, 200)
+
     macd, signal, hist = calculate_macd(df)
     df['MACD'] = macd
     df['MACD_Signal'] = signal
     df['MACD_Hist'] = hist
+
     df['Relative_Volume'] = df['Volume'] / df['Volume'].rolling(window=20).mean()
+
+    # --- SMA Crossover Features ---
+    df['SMA_10'] = calculate_sma(df, 10)   # used instead of SMA to stay consistent with training
+    df['SMA_20'] = calculate_sma(df, 20)
+    df['SMA_50'] = calculate_sma(df, 50)
+    df['SMA_200'] = calculate_sma(df, 200)
+
+    df['SMA_10_20_cross'] = (df['SMA_10'] > df['SMA_20']).astype(int)
+    df['SMA_10_20_cross_lagged'] = df['SMA_10_20_cross'].shift(1).fillna(0).astype(int)
+    df['SMA_10_20_crossover_signal'] = df['SMA_10_20_cross'] - df['SMA_10_20_cross_lagged']
+
+    df['SMA_20_50_cross'] = (df['SMA_20'] > df['SMA_50']).astype(int)
+    df['SMA_20_50_cross_lagged'] = df['SMA_20_50_cross'].shift(1).fillna(0).astype(int)
+    df['SMA_20_50_crossover_signal'] = df['SMA_20_50_cross'] - df['SMA_20_50_cross_lagged']
+
+    df['SMA_50_200_cross'] = (df['SMA_50'] > df['SMA_200']).astype(int)
+    df['SMA_50_200_cross_lagged'] = df['SMA_50_200_cross'].shift(1).fillna(0).astype(int)
+    df['SMA_50_200_crossover_signal'] = df['SMA_50_200_cross'] - df['SMA_50_200_cross_lagged']
+
+    # Drop intermediate _cross and _lagged columns (keep only the 3 crossover signals)
+    df = df.drop(columns=[col for col in df.columns if col.endswith('_cross') or col.endswith('_cross_lagged')])
+
     df = df.dropna()
     return df
+
 
 # --- Technical Indicator Functions ---
 def calculate_ema(data, period):
