@@ -91,9 +91,9 @@ X_seq = np.array(X_seq)
 y_seq = np.array(y_seq).reshape(-1, 1)
 
 # 🛠️ DEBUG: Check feature mismatch
-print("🔍 Current X shape:", X.shape)
-print("🔍 Scaler expects this many features:", scaler_X.n_features_in_)
-print("🔍 Current X columns:", list(X.columns))
+st.write("🔍 Current X shape:", X.shape)
+st.write("🔍 Scaler expects this many features:", scaler_X.n_features_in_)
+st.write("🔍 Current X columns:", list(X.columns))
 
 # Scale
 X_seq_scaled = scaler_X.transform(X_seq.reshape(-1, X.shape[1])).reshape(X_seq.shape)
